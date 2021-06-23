@@ -1,6 +1,7 @@
 import React, { ReactElement, useState } from 'react'
 import { View, FlatList, Text } from 'react-native';
 
+import Background from '../../components/Background';
 import Profile from '../../components/Profile';
 import ButtonAdd from '../../components/ButtonAdd';
 import CategorySelect from '../../components/CategorySelect';
@@ -56,7 +57,7 @@ export default function Home(): ReactElement {
   }
 
   return (
-    <View>
+    <Background>
       <View style={styles.header}>
         <Profile />
         <ButtonAdd />
@@ -80,6 +81,6 @@ export default function Home(): ReactElement {
             <Appointment data={item}/>
           )} />
       </View>
-    </View>
+    </Background>
   );
 }

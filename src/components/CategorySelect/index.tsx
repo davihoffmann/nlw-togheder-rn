@@ -8,9 +8,10 @@ import { styles } from './styles'
 type Props = {
   categorySelected: string;
   selectCategory: (categoryId: string) => void;
+  hasCheckBox?: boolean;
 }
 
-export default function CategorySelect({ categorySelected, selectCategory }: Props): ReactElement {
+export default function CategorySelect({ categorySelected, selectCategory, hasCheckBox = false }: Props): ReactElement {
   return (
     <ScrollView 
       style={styles.container} 
@@ -25,6 +26,7 @@ export default function CategorySelect({ categorySelected, selectCategory }: Pro
             title={category.title} 
             icon={category.icon}
             checked={category.id === categorySelected}
+            hasCheckBox={hasCheckBox}
             onPress={() => selectCategory(category.id)}
           />
         ))
