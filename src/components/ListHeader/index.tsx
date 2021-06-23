@@ -7,7 +7,7 @@ type Props = {
   subtitle: string;
 }
 
-export default function listHeader({ title, subtitle }: Props):ReactElement {
+export default function ListHeader({ title, subtitle }: Props):ReactElement {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{ title }</Text>

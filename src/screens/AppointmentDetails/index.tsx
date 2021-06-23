@@ -1,15 +1,33 @@
 import React, { ReactElement } from 'react';
-import { ImageBackground, Text, View } from 'react-native';
+import { ImageBackground, Text, View, FlatList } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 import { Fontisto } from '@expo/vector-icons';
 
 import Background from '../../components/Background';
 import Header from '../../components/Header';
 import ListHeader from '../../components/ListHeader';
+import Member from '../../components/Member';
+import ListDivider from '../../components/ListDivider';
+import ButtonIcon from '../../components/ButtonIcon';
 
 import { theme } from '../../global/styles/theme';
 import BannerImg from '../../assets/banner.png';
 import { styles } from './styles';
+
+const members = [
+  {
+    id: '1',
+    username: 'Davi',
+    avatar_url: 'https://github.com/davihoffmann.png',
+    status: 'online'
+  },
+  {
+    id: '2',
+    username: 'Davi',
+    avatar_url: 'https://github.com/davihoffmann.png',
+    status: 'offline'
+  }
+]
 
 export default function AppointmentDetails(): ReactElement {
   return (
@@ -27,11 +45,27 @@ export default function AppointmentDetails(): ReactElement {
         <View style={styles.bannerContent}>
           <Text style={styles.title}>Lendários</Text>
         
-          <Text style={styles.subtitle}>É hoje que vamos chegar ao challenger sem perder uma partida md10</Text>
+          <Text style={styles.subtitle}>
+            É hoje que vamos chegar ao challenger sem perder uma partida md10
+          </Text>
         </View>
       </ImageBackground>
 
       <ListHeader title="Jogadores" subtitle="Total 3" />
+
+      <FlatList 
+        data={members}
+        keyExtractor={item => item.id}
+        ItemSeparatorComponent={() => <ListDivider />}
+        renderItem={({item}) => (
+          <Member data={item} />
+        )}
+        style={styles.members}
+      />
+
+      <View style={styles.footer}>
+          <ButtonIcon title="Entrar na Partida" />
+      </View>
     </Background>
   );
 }
