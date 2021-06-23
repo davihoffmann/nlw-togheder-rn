@@ -11,6 +11,7 @@ import SmallInput from '../../components/SmallInput';
 import TextArea from '../../components/TextArea';
 import Button from '../../components/Button';
 import ModalView from '../../components/ModalView';
+import Background from '../../components/Background';
 import Guilds from '../Guilds';
 import { GuildProps } from '../../components/Guild/types';
 
@@ -23,8 +24,16 @@ export default function AppointmentCreate(): ReactElement {
   const [category, setCategory] = useState('');
   const [guild, setGuild] = useState<GuildProps>({} as GuildProps);
 
+  function handleCategorySelect(categoryId: string) {
+    setCategory(categoryId);
+  }
+
   function handleOpenModal() {
     setVisibleModal(true);
+  }
+
+  function handleCloseModal() {
+    setVisibleModal(false);
   }
 
   function handleGuildSelect(guildSelect: GuildProps) {
@@ -34,8 +43,8 @@ export default function AppointmentCreate(): ReactElement {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-      <ScrollView keyboardShouldPersistTaps="handled">
-        {/* <Background> */}
+      <Background>
+        <ScrollView keyboardShouldPersistTaps="handled">
           <Header 
             title="Agendar Partida" 
           />
@@ -47,7 +56,7 @@ export default function AppointmentCreate(): ReactElement {
           <CategorySelect 
             hasCheckBox 
             categorySelected={category} 
-            selectCategory={setCategory}
+            selectCategory={handleCategorySelect}
           />
 
           <View style={styles.form}>
@@ -75,7 +84,7 @@ export default function AppointmentCreate(): ReactElement {
 
             <View style={styles.field}>
               <View>
-                <Text style={styles.label}>Dia e mês</Text>
+                <Text style={[styles.label, { marginBottom: 12 }]}>Dia e mês</Text>
 
                 <View style={styles.column}>
                   <SmallInput maxLength={2} />
@@ -87,7 +96,7 @@ export default function AppointmentCreate(): ReactElement {
               </View>
 
               <View>
-                <Text style={styles.label}>Hora e Minuto</Text>
+                <Text style={[styles.label, { marginBottom: 12 }]}>Hora e Minuto</Text>
 
                 <View style={styles.column}>
                   <SmallInput maxLength={2} />
@@ -111,11 +120,10 @@ export default function AppointmentCreate(): ReactElement {
             </View>
 
           </View>
-        
-        {/* </Background> */}
-      </ScrollView>
+        </ScrollView>
+      </Background>
       
-      <ModalView visible={visibleModal}>
+      <ModalView visible={visibleModal} closeModal={handleCloseModal}>
         <Guilds handleGuildSelect={handleGuildSelect} />
       </ModalView>
     </KeyboardAvoidingView>

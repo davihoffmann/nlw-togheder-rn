@@ -10,6 +10,12 @@ import { styles } from './styles';
 const guilds = [
   {id: '1', name: 'Lendários', icon: null, owner: true},
   {id: '2', name: 'Galera do Game', icon: null, owner: true},
+  {id: '3', name: 'Galera do Game', icon: null, owner: true},
+  {id: '4', name: 'Galera do Game', icon: null, owner: true},
+  {id: '5', name: 'Galera do Game', icon: null, owner: true},
+  {id: '6', name: 'Galera do Game', icon: null, owner: true},
+  {id: '7', name: 'Galera do Game', icon: null, owner: true},
+  {id: '8', name: 'Galera do Game', icon: null, owner: true},
 ]
 
 type Props = {
@@ -23,12 +29,14 @@ export default function Guilds({ handleGuildSelect }: Props): ReactElement {
       <FlatList
         keyExtractor={item => item.id}
         data={guilds}
-        ItemSeparatorComponent={() => <ListDivider />}
+        ItemSeparatorComponent={() => <ListDivider isCentered />}
         showsVerticalScrollIndicator={false}
         style={styles.guilds}
         renderItem={({item}) => (
           <Guild data={item} onPress={() => handleGuildSelect(item)} />
         )}
+        contentContainerStyle={{paddingBottom: 68, paddingTop: 103}}
+        ListHeaderComponent={() => <ListDivider isCentered />}
       />
     </View>
   );
