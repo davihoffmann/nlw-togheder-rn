@@ -58,6 +58,10 @@ export default function Home(): ReactElement {
     categoryId === category ? setCategory('') : setCategory(categoryId);
   }
 
+  function handleAppointmentCreate() {
+    navigation.navigate('AppointmentCreate');
+  }
+
   function handleAppointmentDatail() {
     navigation.navigate('AppointmentDetails');
   }
@@ -66,7 +70,7 @@ export default function Home(): ReactElement {
     <Background>
       <View style={styles.header}>
         <Profile />
-        <ButtonAdd />
+        <ButtonAdd onPress={handleAppointmentCreate} />
       </View>
 
       <CategorySelect 
