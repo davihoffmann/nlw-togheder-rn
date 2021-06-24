@@ -56,7 +56,7 @@ export default function AppointmentDetails(): ReactElement {
       <FlatList 
         data={members}
         keyExtractor={item => item.id}
-        ItemSeparatorComponent={() => <ListDivider />}
+        ItemSeparatorComponent={() => <ListDivider isCentered />}
         renderItem={({item}) => (
           <Member data={item} />
         )}
