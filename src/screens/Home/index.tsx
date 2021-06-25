@@ -12,6 +12,8 @@ import Appointment from '../../components/Appointment';
 import { AppointmentProps } from '../../components/Appointment/types';
 import ListDivider from '../../components/ListDivider';
 import Load from '../../components/Load';
+import ModalSmall from '../../components/ModalSmall';
+import Logout from '../Logout';
 
 import { COLLECTION_APPOINTMENTS } from '../../configs/database';
 
@@ -22,6 +24,15 @@ export default function Home(): ReactElement {
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('');
   const [appointments, setAppointments] = useState<AppointmentProps[]>([]);
+  const [showModalLogout, setShowModalLogout] = useState(false);
+
+  function handleShowModalLogout() {
+    setShowModalLogout(true);
+  }
+
+  function handleCloseModalLogout() {
+    setShowModalLogout(false);
+  }
   
   function handleCategorySelect(categoryId: string) {
     categoryId === category ? setCategory('') : setCategory(categoryId);
@@ -53,37 +64,43 @@ export default function Home(): ReactElement {
   }, [category]));
 
   return (
-    <Background>
-      <View style={styles.header}>
-        <Profile />
-        <ButtonAdd onPress={handleAppointmentCreate} />
-      </View>
+    <>
+      <Background>
+        <View style={styles.header}>
+          <Profile handleOpenModal={handleShowModalLogout} />
+          <ButtonAdd onPress={handleAppointmentCreate} />
+        </View>
 
-      <CategorySelect 
-        categorySelected={category} 
-        selectCategory={handleCategorySelect} 
-      />
-      
-      {
-        loading 
-        ? <Load />
-        : (
-            <>
-              <ListHeader title="Partidas Agendadas" subtitle={`Total ${appointments.length}`} />
-              <FlatList 
-                data={appointments} 
-                keyExtractor={item => item.id} 
-                style={styles.matches}
-                showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={() => <ListDivider />}
-                renderItem={({item}) => (
-                  <Appointment data={item} onPress={() => handleAppointmentDatail(item)} />
-                )}
-                contentContainerStyle={{ paddingBottom: 69 }}
-              />
-          </>
-        )
-      }
-    </Background>
+        <CategorySelect 
+          categorySelected={category} 
+          selectCategory={handleCategorySelect} 
+        />
+        
+        {
+          loading 
+          ? <Load />
+          : (
+              <>
+                <ListHeader title="Partidas Agendadas" subtitle={`Total ${appointments.length}`} />
+                <FlatList 
+                  data={appointments} 
+                  keyExtractor={item => item.id} 
+                  style={styles.matches}
+                  showsVerticalScrollIndicator={false}
+                  ItemSeparatorComponent={() => <ListDivider />}
+                  renderItem={({item}) => (
+                    <Appointment data={item} onPress={() => handleAppointmentDatail(item)} />
+                  )}
+                  contentContainerStyle={{ paddingBottom: 69 }}
+                />
+            </>
+          )
+        }
+      </Background>
+
+      <ModalSmall visible={showModalLogout}>
+        <Logout closeModal={handleCloseModalLogout} />
+      </ModalSmall>
+    </>
   );
 }
