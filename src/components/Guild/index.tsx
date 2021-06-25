@@ -15,7 +15,7 @@ export default function Guild({ data, ...rest}: Props): ReactElement {
       activeOpacity={0.7} 
       {...rest}
     >
-      <GuildIcon />
+      <GuildIcon guildId={data.id} iconId={data.icon} />
 
       <View style={styles.content}>
         <View>
