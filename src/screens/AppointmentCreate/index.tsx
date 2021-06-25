@@ -1,9 +1,13 @@
 import React, { ReactElement, useState } from 'react';
 import { View, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { RectButton } from 'react-native-gesture-handler';
 import { Feather } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import uuid from 'react-native-uuid';
 
-// import Background from '../../components/Background';
+import { COLLECTION_APPOINTMENTS } from '../../configs/database';
+
 import Header from '../../components/Header';
 import CategorySelect from '../../components/CategorySelect';
 import GuildIcon from '../../components/GuildIcon';
@@ -20,9 +24,16 @@ import { theme } from '../../global/styles/theme';
 
 
 export default function AppointmentCreate(): ReactElement {
+  const navigation = useNavigation();
   const [visibleModal, setVisibleModal] = useState(false);
   const [category, setCategory] = useState('');
   const [guild, setGuild] = useState<GuildProps>({} as GuildProps);
+
+  const [day, setDay] = useState('');
+  const [month, setMonth] = useState('');
+  const [hour, setHour] = useState('');
+  const [minute, setMinute] = useState('');
+  const [description, setDescription] = useState('');
 
   function handleCategorySelect(categoryId: string) {
     setCategory(categoryId);
@@ -39,6 +50,26 @@ export default function AppointmentCreate(): ReactElement {
   function handleGuildSelect(guildSelect: GuildProps) {
     setGuild(guildSelect);
     setVisibleModal(false);
+  }
+
+  async function handleSave() {
+    const newAppointment = {
+      id: uuid.v4(),
+      guild, 
+      category,
+      date: `${day}/${month} às ${hour}:${minute}h`,
+      description
+    }
+
+    const storage = await AsyncStorage.getItem(COLLECTION_APPOINTMENTS);
+    const appointments = storage ? JSON.parse(storage) : [];
+
+    await AsyncStorage.setItem(
+      COLLECTION_APPOINTMENTS, 
+      JSON.stringify([...appointments, newAppointment])
+    );
+
+    navigation.navigate('Home');
   }
 
   return (
@@ -64,7 +95,7 @@ export default function AppointmentCreate(): ReactElement {
               <View style={styles.select}>
                 {
                   guild.icon 
-                    ? <GuildIcon /> 
+                    ? <GuildIcon guildId={guild.id} iconId={guild.icon} /> 
                     : <View style={styles.image} />
                 }
 
@@ -87,11 +118,17 @@ export default function AppointmentCreate(): ReactElement {
                 <Text style={[styles.label, { marginBottom: 12 }]}>Dia e mês</Text>
 
                 <View style={styles.column}>
-                  <SmallInput maxLength={2} />
-                    <Text style={styles.divider}>
-                      /
-                    </Text>
-                    <SmallInput maxLength={2} />
+                  <SmallInput 
+                    maxLength={2}
+                    onChangeText={setDay}
+                  />
+                  <Text style={styles.divider}>
+                    /
+                  </Text>
+                  <SmallInput 
+                    maxLength={2}
+                    onChangeText={setMonth}
+                  />
                 </View>
               </View>
 
@@ -99,11 +136,17 @@ export default function AppointmentCreate(): ReactElement {
                 <Text style={[styles.label, { marginBottom: 12 }]}>Hora e Minuto</Text>
 
                 <View style={styles.column}>
-                  <SmallInput maxLength={2} />
-                    <Text style={styles.divider}>
-                      :
-                    </Text>
-                    <SmallInput maxLength={2} />
+                  <SmallInput 
+                    maxLength={2}
+                    onChangeText={setHour}
+                  />
+                  <Text style={styles.divider}>
+                    :
+                  </Text>
+                  <SmallInput 
+                    maxLength={2}
+                    onChangeText={setMinute}
+                  />
                 </View>
               </View>
             </View>
@@ -113,10 +156,17 @@ export default function AppointmentCreate(): ReactElement {
 
               <Text style={styles.caracteresLimit}>Max 100 caracteres</Text>
             </View>
-            <TextArea multiline maxLength={100} numberOfLines={5} autoCorrect={false} />
+
+            <TextArea 
+              multiline 
+              maxLength={100} 
+              numberOfLines={5} 
+              autoCorrect={false}
+              onChangeText={setDescription}
+            />
 
             <View style={styles.footer}>
-                <Button title="Agendar" />
+                <Button title="Agendar" onPress={handleSave} />
             </View>
 
           </View>

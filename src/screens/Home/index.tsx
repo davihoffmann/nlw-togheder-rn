@@ -1,6 +1,7 @@
-import React, { ReactElement, useState } from 'react'
-import { View, FlatList, Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native'
+import React, { ReactElement, useState, useCallback, useEffect } from 'react'
+import { View, FlatList } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Background from '../../components/Background';
 import Profile from '../../components/Profile';
@@ -8,31 +9,20 @@ import ButtonAdd from '../../components/ButtonAdd';
 import CategorySelect from '../../components/CategorySelect';
 import ListHeader from '../../components/ListHeader';
 import Appointment from '../../components/Appointment';
+import { AppointmentProps } from '../../components/Appointment/types';
 import ListDivider from '../../components/ListDivider';
+import Load from '../../components/Load';
 
-import {  styles } from './styles'
+import { COLLECTION_APPOINTMENTS } from '../../configs/database';
 
-const appointments = [
-  { 
-    id:'1', 
-    guild: { id: '1', name: 'Lendários', icon: null, owner: true }, 
-    category: '1', 
-    date: '22/06 às 20h40min', 
-    description: 'É hoje que vamos chegar ao challenger sem perder uma partida da md10' 
-  },
-  { 
-    id:'2', 
-    guild: { id: '1', name: 'Lendários', icon: null, owner: true }, 
-    category: '1', 
-    date: '22/06 às 20h40min', 
-    description: 'É hoje que vamos chegar ao challenger sem perder uma partida da md10' 
-  },
-]
+import {  styles } from './styles';
 
 export default function Home(): ReactElement {
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('');
-
+  const [appointments, setAppointments] = useState<AppointmentProps[]>([]);
+  
   function handleCategorySelect(categoryId: string) {
     categoryId === category ? setCategory('') : setCategory(categoryId);
   }
@@ -41,9 +31,26 @@ export default function Home(): ReactElement {
     navigation.navigate('AppointmentCreate');
   }
 
-  function handleAppointmentDatail() {
-    navigation.navigate('AppointmentDetails');
+  function handleAppointmentDatail(appointmentSelected: AppointmentProps) {
+    navigation.navigate('AppointmentDetails', { appointmentSelected });
   }
+
+  async function loadAppointments() {
+    const storage = await AsyncStorage.getItem(COLLECTION_APPOINTMENTS);
+    const storageResponse: AppointmentProps[] = storage ? JSON.parse(storage): [];
+
+    if(category) {
+      setAppointments(storageResponse.filter(item => item.category === category));
+    } else {
+      setAppointments(storageResponse);
+    }
+
+    setLoading(false);
+  }
+  
+  useFocusEffect(useCallback(() => {
+    loadAppointments();
+  }, [category]));
 
   return (
     <Background>
@@ -57,19 +64,26 @@ export default function Home(): ReactElement {
         selectCategory={handleCategorySelect} 
       />
       
-      <ListHeader title="Partidas Agendadas" subtitle="Total 6" />
-    
-      <FlatList 
-        data={appointments} 
-        keyExtractor={item => item.id} 
-        style={styles.matches}
-        showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => <ListDivider />}
-        renderItem={({item}) => (
-          <Appointment data={item} onPress={() => handleAppointmentDatail()} />
-        )}
-        contentContainerStyle={{ paddingBottom: 69 }}
-      />
+      {
+        loading 
+        ? <Load />
+        : (
+            <>
+              <ListHeader title="Partidas Agendadas" subtitle={`Total ${appointments.length}`} />
+              <FlatList 
+                data={appointments} 
+                keyExtractor={item => item.id} 
+                style={styles.matches}
+                showsVerticalScrollIndicator={false}
+                ItemSeparatorComponent={() => <ListDivider />}
+                renderItem={({item}) => (
+                  <Appointment data={item} onPress={() => handleAppointmentDatail(item)} />
+                )}
+                contentContainerStyle={{ paddingBottom: 69 }}
+              />
+          </>
+        )
+      }
     </Background>
   );
 }
